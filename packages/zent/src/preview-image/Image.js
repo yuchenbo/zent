@@ -15,7 +15,8 @@ export default class Image extends Component {
   state = {
     imageIndex: this.props.index || 0,
     imageStyle: {},
-    rotateIndex: 0
+    rotateIndex: 0,
+    scaleTag: 0
   };
 
   static propTypes = {
@@ -48,19 +49,27 @@ export default class Image extends Component {
     this.props.onClose();
   };
 
+  // 旋转
   handleRotate = () => {
     let rotateIndex = this.state.rotateIndex;
     let deg = 90 + rotateIndex * 90;
+
+    console.log(rotateIndex);
+    console.log(deg);
+
     rotateIndex++;
+
     this.setState({
       imageStyle: {
         transform: `rotate(${deg}deg)`,
         transitionDuration: '0.5s'
       },
-      rotateIndex
+      rotateIndex,
+      scaleTag: 0
     });
   };
 
+  // 上一张
   handlePreviousAction = () => {
     const imagesNum = this.props.images.length;
     let imageIndex = this.state.imageIndex;
@@ -70,10 +79,12 @@ export default class Image extends Component {
       imageStyle: {
         transform: 'rotate(0deg)'
       },
-      rotateIndex: 0
+      rotateIndex: 0,
+      scaleTag: 0
     });
   };
 
+  // 下一张
   handleNextAction = () => {
     const imagesNum = this.props.images.length;
     let imageIndex = this.state.imageIndex;
@@ -83,12 +94,35 @@ export default class Image extends Component {
       imageStyle: {
         transform: 'rotate(0deg)'
       },
-      rotateIndex: 0
+      rotateIndex: 0,
+      scaleTag: 0
+    });
+  };
+
+  // 放大缩小
+  handleScale = () => {
+    const { rotateIndex, scaleTag } = this.state;
+    let deg = rotateIndex * 90;
+    const transformStyle =
+      scaleTag === 0
+        ? `rotate(${deg}deg) scale(1.2)`
+        : `rotate(${deg}deg) scale(1)`;
+
+    this.setState({
+      imageStyle: {
+        transform: transformStyle,
+        transitionDuration: '0.5s'
+      },
+      scaleTag: (scaleTag + 1) % 2
     });
   };
 
   render() {
     const { images, prefix, showRotateBtn, className } = this.props;
+    const { scaleTag } = this.state;
+    const imageClassName = cx(`${prefix}-show-image`, {
+      'image-is-zooming': scaleTag === 1
+    });
 
     return (
       <ImagePortalESCToClose
@@ -108,7 +142,8 @@ export default class Image extends Component {
                     if (index === this.state.imageIndex) {
                       return (
                         <img
-                          className={`${prefix}-show-image`}
+                          className={imageClassName}
+                          onClick={this.handleScale}
                           style={this.state.imageStyle}
                           src={image}
                           key={index}
