@@ -41,6 +41,10 @@
   animation-duration: 0.3s;
 }
 
+.zent-notify-exited {
+  display: none;
+}
+
 @keyframes notifyMoveIn {
   0% {
     transform: translateY(-100%);
@@ -56,11 +60,11 @@
 @keyframes notifyMoveOut {
   0% {
     opacity: 1;
-    max-height: 150px;
+    transform: translateY(0%);
   }
 
   100% {
     opacity: 0;
-    max-height: 0;
+    transform: translateY(-100%);
   }
 }
